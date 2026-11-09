@@ -25,7 +25,7 @@
 Download or clone the repository from GitHub.
 
 ### Step 2. Run Setup
-Double-click `Setup.bat`. This automatically installs Ollama and downloads the required AI model.
+Double-click Setup.bat. This automatically installs Ollama and downloads the required AI model. If you want to use a different model, open a terminal and run ollama pull <model-name> (e.g. ollama pull llama3.2:3b), then double-click Setup.bat again. It will detect the new model and automatically update your .env.
 
 ### Step 3. Create a Discord bot
 Go to the [Discord Developer Portal](https://discord.com/developers/applications) and create a new application.
