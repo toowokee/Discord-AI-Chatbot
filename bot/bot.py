@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 import re
 import time
 
@@ -15,8 +16,7 @@ from bot.safety import check_safety, is_ai_confession, sanitize_ai_identity, san
 
 log = logging.getLogger(__name__)
 
-# User ID allowed to toggle robot/human mode
-_MODE_CONTROLLER_ID = 1129860902779359323
+_MODE_CONTROLLER_ID = int(os.getenv("MODE_CONTROLLER_ID", "0"))
 
 DISCORD_CHAR_LIMIT = 2000
 
