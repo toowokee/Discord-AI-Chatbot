@@ -1,43 +1,95 @@
+```bat
 @echo off
+setlocal EnableDelayedExpansion
+
 title Discord AI Bot
 color 0A
 
+set "OLLAMA_URL=http://localhost:11434"
 set "OLLAMA_PID="
+set "EXIT_CODE=0"
 
-echo [1/3] Starting Ollama...
+echo Starting Discord AI Bot...
+echo.
 
-curl.exe -s http://localhost:11434/api/tags >nul 2>&1
-
-if errorlevel 1 (
-    for /f %%P in ('powershell.exe -NoProfile -Command "$p=Start-Process -FilePath (Get-Command ollama.exe).Source -ArgumentList serve -PassThru -WindowStyle Hidden; $p.Id"') do set "OLLAMA_PID=%%P"
+:: Check dependencies
+where ollama.exe >nul 2>&1 || (
+    echo [ERROR] Ollama not found.
+    goto ERROR
 )
 
-echo [2/3] Waiting for Ollama API...
+where python.exe >nul 2>&1 || (
+    echo [ERROR] Python not found.
+    goto ERROR
+)
+
+if not exist "Main.py" (
+    echo [ERROR] Main.py not found.
+    goto ERROR
+)
+
+:: Check if Ollama is already running
+echo Checking Ollama...
+
+curl.exe -fsS "%OLLAMA_URL%/api/tags" >nul 2>&1
+
+if errorlevel 1 (
+    echo Starting Ollama...
+
+    for /f %%P in ('powershell -NoProfile -Command "(Start-Process ollama.exe -ArgumentList 'serve' -PassThru -WindowStyle Hidden).Id"') do (
+        set "OLLAMA_PID=%%P"
+    )
+
+    if not defined OLLAMA_PID (
+        echo [ERROR] Failed to start Ollama.
+        goto ERROR
+    )
+)
+
+:: Wait for Ollama
+echo Waiting for Ollama API...
 
 set /a attempts=0
 
 :WAIT
-curl.exe -s http://localhost:11434/api/tags >nul 2>&1
-if not errorlevel 1 goto READY
+curl.exe -fsS "%OLLAMA_URL%/api/tags" >nul 2>&1
+
+if not errorlevel 1 goto START_BOT
 
 set /a attempts+=1
-if %attempts% GEQ 30 (
-    echo ERROR: Ollama failed to start.
-    goto CLEANUP
+
+if !attempts! GEQ 45 (
+    echo [ERROR] Ollama failed to respond.
+    goto ERROR
 )
 
 timeout /t 2 /nobreak >nul
 goto WAIT
 
-:READY
-echo Ollama is running!
-echo [3/3] Starting Discord Bot...
+:START_BOT
+echo Ollama is ready.
+echo.
+echo Starting bot...
+echo.
 
-python Main.py
+python -u Main.py
+set "EXIT_CODE=!errorlevel!"
+
+goto CLEANUP
+
+:ERROR
+set "EXIT_CODE=1"
 
 :CLEANUP
 if defined OLLAMA_PID (
-    taskkill /PID %OLLAMA_PID% /T /F >nul 2>&1
+    echo.
+    echo Stopping Ollama...
+    taskkill /PID !OLLAMA_PID! /T /F >nul 2>&1
 )
 
-exit
+echo.
+echo Bot stopped with exit code !EXIT_CODE!.
+pause
+
+exit /b !EXIT_CODE!
+```
