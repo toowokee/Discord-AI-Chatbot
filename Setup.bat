@@ -4,6 +4,7 @@ title Discord-AI-Chatbot Setup
 
 echo ==========================================
 echo       Discord-AI-Chatbot Setup
+echo          Made By @Toowoke
 echo ==========================================
 echo.
 
@@ -76,8 +77,9 @@ if errorlevel 1 (
 
 echo.
 echo ==========================================
-echo Setup complete!
-echo Run Start.Bat to start the bot!
+echo         Setup complete!
+echo     Run Start.Bat to start the bot!
+Echo         Have A Good Day
 echo ==========================================
 pause
 endlocal
