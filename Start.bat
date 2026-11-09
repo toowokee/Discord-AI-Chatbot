@@ -1,9 +1,9 @@
 ```bat
 @echo off
 setlocal EnableDelayedExpansion
+
 title Discord AI Bot
 title Made By @TooWoke
-
 color 0A
 
 set "OLLAMA_URL=http://localhost:11434"
@@ -13,7 +13,6 @@ set "EXIT_CODE=0"
 echo Starting Discord AI Bot...
 echo.
 
-:: Check dependencies
 where ollama.exe >nul 2>&1 || (
     echo [ERROR] Ollama not found.
     goto ERROR
@@ -29,7 +28,6 @@ if not exist "Main.py" (
     goto ERROR
 )
 
-:: Check if Ollama is already running
 echo Checking Ollama...
 
 curl.exe -fsS "%OLLAMA_URL%/api/tags" >nul 2>&1
@@ -47,7 +45,6 @@ if errorlevel 1 (
     )
 )
 
-:: Wait for Ollama
 echo Waiting for Ollama API...
 
 set /a attempts=0
