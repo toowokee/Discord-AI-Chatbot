@@ -1,11 +1,10 @@
+```bat
 @echo off
 setlocal
 title Discord-AI-Chatbot Setup
 
-rem ---- Settings ----
 set "DEFAULT_MODEL=qwen2.5:1.5b"
 set "ENV_KEY=OLLAMA_MODEL"
-rem ------------------
 
 echo ==========================================
 echo       Discord-AI-Chatbot Setup
@@ -52,7 +51,6 @@ if errorlevel 1 (
     exit /b 1
 )
 
-rem ---- Make sure the Ollama server is running ----
 "%OLLAMA%" list >nul 2>&1
 if errorlevel 1 (
     echo Starting Ollama server...
@@ -67,7 +65,6 @@ if errorlevel 1 (
     exit /b 1
 )
 
-rem ---- Check which models are already installed ----
 echo.
 echo Checking installed models...
 
@@ -90,11 +87,20 @@ if defined MODEL (
     set "MODEL=%DEFAULT_MODEL%"
 )
 
-rem ---- Write the model into .env ----
 echo.
-echo Setting %ENV_KEY%=%MODEL% in .env...
+set /p "MODE_CONTROLLER_ID=What's your Discord ID? "
 
-powershell -NoProfile -Command "$k=$env:ENV_KEY; $v=$env:MODEL; $f='.env'; if (Test-Path $f) { $l=@(Get-Content $f) } else { $l=@() }; $found=$false; $l=@($l | ForEach-Object { if ($_ -match ('^\s*' + $k + '\s*=')) { $found=$true; $k + '=' + $v } else { $_ } }); if (-not $found) { $l += ($k + '=' + $v) }; Set-Content -Path $f -Value $l -Encoding ascii"
+if not defined MODE_CONTROLLER_ID (
+    echo Discord ID cannot be empty.
+    pause
+    exit /b 1
+)
+
+echo.
+echo Updating .env...
+
+powershell -NoProfile -Command "$f='.env'; $settings=@{ $env:ENV_KEY=$env:MODEL; 'MODE_CONTROLLER_ID'=$env:MODE_CONTROLLER_ID }; if (Test-Path $f) { $l=@(Get-Content $f) } else { $l=@() }; foreach ($k in $settings.Keys) { $found=$false; $l=@($l | ForEach-Object { if ($_ -match ('^\s*' + [regex]::Escape($k) + '\s*=')) { $found=$true; $k + '=' + $settings[$k] } else { $_ } }); if (-not $found) { $l += ($k + '=' + $settings[$k]) } }; Set-Content -Path $f -Value $l -Encoding ascii"
+
 if errorlevel 1 (
     echo Failed to update .env
     pause
@@ -114,7 +120,6 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 
 if errorlevel 1 (
-    echo.
     echo Failed to install Python requirements.
     pause
     exit /b 1
@@ -129,3 +134,4 @@ echo         Have A Good Day
 echo ==========================================
 pause
 endlocal
+```
