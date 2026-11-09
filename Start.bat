@@ -1,8 +1,9 @@
 ```bat
 @echo off
 setlocal EnableDelayedExpansion
-
 title Discord AI Bot
+title Made By @TooWoke
+
 color 0A
 
 set "OLLAMA_URL=http://localhost:11434"
