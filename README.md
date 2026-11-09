@@ -15,8 +15,10 @@
 <details>
 <summary><strong>Commands (Click to expand)</strong></summary>
 
-- [x] `!remember`: Allows users to save information for the bot to recall later.
-
+- [x] `!Remember`: Lets users save information for the bot to remember later.
+- [x] `!Human`: Makes the bot act like a human and believe it's human.
+- [x] `!Robot`: Makes the bot act like a robot and know it's an AI.
+      
 </details>
 
 # Setup
